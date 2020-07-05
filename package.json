@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.5"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "watch": "tsc --watch index.ts"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^1.0.0-pre.50"
+  }
+}
