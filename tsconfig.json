@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext", "WebWorker", "ScriptHost"],
+    "module": "commonjs",
+    "target": "es6",
+    "lib": ["dom", "dom.iterable", "ScriptHost", "es2015"],
     "allowJs": true,
     "downlevelIteration": true,
     "skipLibCheck": true,
@@ -9,7 +10,6 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": false,
@@ -20,6 +20,6 @@
     "outDir": "out"
   },
   "defaultSeverity": "warning",
-  "include": ["src/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/*", "src/modules.d.ts", "old/index_old.ts"],
+  "exclude": ["node_modules", "old"]
 }

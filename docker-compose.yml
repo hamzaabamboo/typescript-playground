@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+  tvserver:
+    build: .
+    ports:
+      - 4206:420
