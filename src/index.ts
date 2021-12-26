@@ -6,13 +6,15 @@ import dotenv from "dotenv";
 import config from "../config.json";
 import { JSDOM, VirtualConsole } from "jsdom";
 
+process.env.TZ = "Asia/Bangkok";
+
 dotenv.config();
 
 const sleep = (s: number) => new Promise((r) => setTimeout(r, s));
 
 const HOST = process.env["host"] ?? `http://localhost:420`;
 const COOKIE = config?.cookie ?? process.env["cookie"] ?? "";
-const csrftoken = process.env["csrf"] ?? "";
+const csrftoken = config?.csrf ?? process.env["csrf"] ?? "";
 
 const getChannels = async () => {
   const URL =
@@ -43,16 +45,22 @@ interface ServerConfig {
   serverId: string;
   title: string;
 }
-const getStreamLink = async (serverConfig: ServerConfig) => {
+const getStreamLink = async (serverConfig: ServerConfig, ip?: string) => {
   const url = "https://japantvmiru.com/live/change-live-server";
   const data = { channelID: serverConfig.id, serverId: serverConfig.serverId };
-  const res = await axios.post(url, data, {
-    headers: {
-      cookie: COOKIE,
-      "X-CSRF-TOKEN": csrftoken,
-    },
-  });
-  return res;
+  try {
+    const res = await axios.post(url, data, {
+      headers: {
+        cookie: COOKIE,
+        "X-CSRF-TOKEN": csrftoken,
+      },
+    });
+
+    return res;
+  } catch (e: any) {
+    console.log("Something went wrong", serverConfig, e.message);
+  }
+  return { data: {} };
 };
 const app = express();
 
@@ -89,6 +97,7 @@ let commonChannels: { data?: any; cache: Date } | undefined = undefined;
 app.get("/common/playlist.m3u8", async (req, res) => {
   const { data, cache } = commonChannels ?? {};
   let tracks = data;
+  const ip = req.ip;
   if (!tracks || !cache || cache.valueOf() - new Date().valueOf() > 43200) {
     tracks = await Promise.all(
       channels
@@ -136,7 +145,7 @@ app.get("/common/playlist.m3u8", async (req, res) => {
           return {
             title: c.title,
             length: -1,
-            file: (await getStreamLink(c))?.data?.playUrl,
+            file: (await getStreamLink(c, ip))?.data?.playUrl,
           };
         }),
     );
